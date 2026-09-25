@@ -5,7 +5,7 @@ import pandas as pd
 st.set_page_config(page_title="Master Mapping Data", layout="wide")
 
 st.title("📍 Master Mapping Data")
-st.write("Is page par alag-alag locations ki mapping sheet ka data available hai.")
+st.write("This page contains mapping sheet data across various locations.")
 
 # Sample Data (Yahan aap apna real data daal sakte hain ya Excel/CSV upload ka code laga sakte hain)
 data = {
