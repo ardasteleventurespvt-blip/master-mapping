@@ -83,7 +83,6 @@ with st.form(key=f"mapping_form_{selected_partner}", clear_on_submit=True):
             company_fields["Paytm TID"] = st.text_input("Paytm TID *")
             
         elif selected_partner == "HDFC":
-            company_fields["HDFC Dealer Code"] = st.text_input("HDFC Dealer Code *")
             company_fields["HDFC Vendor Code"] = st.text_input("HDFC Vendor Code *")
             
         elif selected_partner == "HDB":
