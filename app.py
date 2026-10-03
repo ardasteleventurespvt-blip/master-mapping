@@ -2,15 +2,39 @@ import streamlit as st
 import pandas as pd
 
 # Page title aur layout set karein
-st.set_page_config(page_title="Master Mapping Data", layout="wide")
+st.set_page_config(page_title="Affordability Mapping - Ardas Tele Ventures", layout="wide")
 
-st.title("📍 Master Mapping Data")
-st.write("This page contains mapping sheet data across various locations.")
+# Company Header & Branding
+st.markdown("<h3 style='text-align: center; color: #1E3A8A;'>Ardas Tele Ventures Pvt. Ltd.</h3>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>Affordability Mapping</h1>", unsafe_allow_html=True)
+st.write("---")
 
-# Sample Data (Yahan aap apna real data daal sakte hain ya Excel/CSV upload ka code laga sakte hain)
+# Mapping option select karne ke liye list
+options = [
+    "BAJAJ",
+    "PAYTM",
+    "HDFC",
+    "HDB",
+    "TVS",
+    "ICICI",
+    "IDFC",
+    "PINELAB"
+]
+
+# Dropdown selection (Selectbox)
+selected_partner = st.selectbox(
+    "📌 Select Partner / Entity for Affordability Mapping:",
+    options,
+    index=0
+)
+
+st.subheader(f"📊 Selected Mapping: {selected_partner}")
+
+# Sample Data (Aap isko apne actual database / CSV se replace kar sakte hain)
 data = {
     "Location ID": ["LOC001", "LOC002", "LOC003", "LOC004"],
     "City/Location Name": ["Delhi", "Mumbai", "Bangalore", "Jaipur"],
+    "Partner Name": [selected_partner] * 4,
     "Mapping Person/Team": ["Ramesh Kumar", "Suresh Sharma", "Priya Singh", "Amit Patel"],
     "Status": ["Active", "Active", "Pending", "Active"]
 }
@@ -29,8 +53,8 @@ else:
 # File download button (Excel ya CSV download ke liye)
 csv = df.to_csv(index=False).encode('utf-8')
 st.download_button(
-    label="📥 Download Mapping Data (CSV)",
+    label=f"📥 Download {selected_partner} Mapping Data (CSV)",
     data=csv,
-    file_name='master_mapping_data.csv',
+    file_name=f'{selected_partner.lower()}_affordability_mapping.csv',
     mime='text/csv',
 )
