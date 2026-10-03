@@ -46,8 +46,8 @@ rajasthan_cities = [
     "Tonk", "Udaipur", "Other"
 ]
 
-# Form definition
-with st.form(key="mapping_form", clear_on_submit=True):
+# Dynamic Form
+with st.form(key=f"mapping_form_{selected_partner}", clear_on_submit=True):
     col1, col2 = st.columns(2)
     
     with col1:
@@ -72,17 +72,47 @@ with st.form(key="mapping_form", clear_on_submit=True):
         contact_number = st.text_input("Contact Number *")
         email_id = st.text_input("Email ID *")
         
-        # Company specific ID field
+        # Company-specific Dynamic Fields
+        company_fields = {}
+        
         if selected_partner == "BAJAJ":
-            mapping_code = st.text_input("BFL ID / Bajaj Mapping Code *")
-        else:
-            mapping_code = st.text_input(f"{selected_partner} Mapping Code / ID *")
+            company_fields["BFL ID / Bajaj Mapping Code"] = st.text_input("BFL ID / Bajaj Mapping Code *")
+            
+        elif selected_partner == "PAYTM":
+            company_fields["Paytm MID"] = st.text_input("Paytm MID (Merchant ID) *")
+            company_fields["Paytm TID"] = st.text_input("Paytm TID *")
+            
+        elif selected_partner == "HDFC":
+            company_fields["HDFC Dealer Code"] = st.text_input("HDFC Dealer Code *")
+            company_fields["HDFC Vendor Code"] = st.text_input("HDFC Vendor Code *")
+            
+        elif selected_partner == "HDB":
+            company_fields["HDB Mapping Code"] = st.text_input("HDB Mapping Code *")
+            
+        elif selected_partner == "TVS":
+            company_fields["TVS Mapping Code"] = st.text_input("TVS Mapping Code *")
+            
+        elif selected_partner == "ICICI":
+            company_fields["ICICI Dealer ID / Mapping Code"] = st.text_input("ICICI Dealer ID / Mapping Code *")
+            
+        elif selected_partner == "IDFC":
+            company_fields["IDFC Store ID"] = st.text_input("IDFC Store ID *")
+            company_fields["Sales Point ID"] = st.text_input("Sales Point ID *")
+            
+        elif selected_partner == "PINELAB":
+            company_fields["Pinelabs MID"] = st.text_input("Pinelabs MID *")
+            company_fields["Pinelabs TID"] = st.text_input("Pinelabs TID *")
 
-    submit_button = st.form_submit_button(label="Submit Mapping Data")
+    submit_button = st.form_submit_button(label=f"Submit {selected_partner} Mapping Data")
 
 # Form submission logic
 if submit_button:
-    if not (apple_id and store_name and address and city and area and pincode and contact_person and contact_number and email_id and mapping_code):
+    # Check basic fields validation
+    basic_fields_valid = all([apple_id, store_name, address, city, area, pincode, contact_person, contact_number, email_id])
+    # Check company specific fields validation
+    company_fields_valid = all(company_fields.values())
+    
+    if not (basic_fields_valid and company_fields_valid):
         st.error("⚠️ Please fill all required mandatory fields (*).")
     else:
         new_record = {
@@ -96,8 +126,10 @@ if submit_button:
             "Contact Person": contact_person,
             "Contact Number": contact_number,
             "Email ID": email_id,
-            "Mapping Code/ID": mapping_code
         }
+        # Add dynamic company specific fields to record
+        new_record.update(company_fields)
+        
         st.session_state.mapping_records.append(new_record)
         st.success(f"✅ Mapping data for {selected_partner} successfully saved!")
 
@@ -111,15 +143,18 @@ if st.session_state.mapping_records:
     # Filter by selected partner
     filtered_df = df_records[df_records["Partner"] == selected_partner]
     
-    st.dataframe(filtered_df, use_container_width=True)
-    
-    # CSV Download Button
-    csv = filtered_df.to_csv(index=False).encode('utf-8')
-    st.download_button(
-        label=f"📥 Download {selected_partner} Mapping Data (CSV)",
-        data=csv,
-        file_name=f'{selected_partner.lower()}_affordability_mapping.csv',
-        mime='text/csv',
-    )
+    if not filtered_df.empty:
+        st.dataframe(filtered_df, use_container_width=True)
+        
+        # CSV Download Button
+        csv = filtered_df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label=f"📥 Download {selected_partner} Mapping Data (CSV)",
+            data=csv,
+            file_name=f'{selected_partner.lower()}_affordability_mapping.csv',
+            mime='text/csv',
+        )
+    else:
+        st.info(f"No records found for {selected_partner}. Fill the form above to add entries.")
 else:
-    st.info("No records submitted yet. Fill out the form above to add data.")
+    st.info("No records submitted yet.")
